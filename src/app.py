@@ -4,8 +4,8 @@ from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 
 from data_base import init_db
-from seller_controller import seller_bp
-from auth_controller import auth_bp
+from Infrastructure.http.seller_controller import seller_bp
+from Infrastructure.http.auth_controller import auth_bp
 
 def create_app():
     app = Flask(__name__)

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
-from seller_model import Seller
+from src.Infrastructure.Model.seller import Seller
 
 auth_bp = Blueprint('auth_bp', __name__)
 

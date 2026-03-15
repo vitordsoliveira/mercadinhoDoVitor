@@ -2,8 +2,8 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from data_base import init_db
 from src.routes import init_routes
-from seller_controller import seller_bp
-from auth_controller import auth_bp
+from src.Infrastructure.http.seller_controller import seller_bp
+from src.Infrastructure.http.auth_controller import auth_bp
 import os
 from dotenv import load_dotenv, find_dotenv
 

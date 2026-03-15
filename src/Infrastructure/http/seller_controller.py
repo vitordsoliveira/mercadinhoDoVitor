@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from seller_model import Seller
+from src.Infrastructure.Model.seller import Seller
 from data_base import db
-from twilio_service import send_activation_code
+from src.Infrastructure.http.whats_app import send_activation_code
 import random
 from twilio.base.exceptions import TwilioRestException
 from sqlalchemy.exc import SQLAlchemyError
