@@ -20,7 +20,7 @@ def login_seller():
         return jsonify({"error": "Credenciais inválidas"}), 401
 
     if seller.status != 'Ativo':
-        return jsonify({"error": "Sua conta não está ativa. Por favor, ative-a usando o código enviado para o seu WhatsApp."}), 403
+        return jsonify({"error": "Sua conta não está ativa, ative!"}), 403
 
     access_token = create_access_token(identity=seller.id)
     
