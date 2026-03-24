@@ -68,13 +68,13 @@ Um seller autenticado pode:
 ### 1️⃣ Cadastro e Ativação do Seller
 - **Criar Seller**
   ```bash
-  curl -X POST "http://localhost:8080/api/sellers" \
+  curl -X POST "http://localhost:3223/api/sellers" \
        -H "Content-Type: application/json" \
        -d '{"nome": "Mini Mercado X", "cnpj": "00.000.000/0001-00", "email": "mercado@email.com", "celular": "+559999999999", "senha": "123456"}'
   ```
 - **Ativar Seller via WhatsApp (Twilio)**
   ```bash
-  curl -X POST "http://localhost:8080/api/sellers/activate" \
+  curl -X POST "http://localhost:3223/api/sellers/activate" \
        -H "Content-Type: application/json" \
        -d '{"celular": "+559999999999", "codigo": "1234"}'
   ```
@@ -82,7 +82,7 @@ Um seller autenticado pode:
 ### 2️⃣ Autenticação
 - **Login**
   ```bash
-  curl -X POST "http://localhost:8080/api/auth/login" \
+  curl -X POST "http://localhost:3223/api/auth/login" \
        -H "Content-Type: application/json" \
        -d '{"email": "mercado@email.com", "senha": "123456"}'
   ```
@@ -90,38 +90,38 @@ Um seller autenticado pode:
 ### 3️⃣ Gerenciamento de Produtos
 - **Cadastrar Produto**
   ```bash
-  curl -X POST "http://localhost:8080/api/products" \
+  curl -X POST "http://localhost:3223/api/products" \
        -H "Authorization: Bearer SEU_TOKEN" \
        -H "Content-Type: application/json" \
        -d '{"nome": "Arroz", "preco": 10.50, "quantidade": 100, "status": "Ativo", "img": "url_da_imagem"}'
   ```
 - **Listar Produtos**
   ```bash
-  curl -X GET "http://localhost:8080/api/products" \
+  curl -X GET "http://localhost:3223/api/products" \
        -H "Authorization: Bearer SEU_TOKEN"
   ```
 - **Editar Produto**
   ```bash
-  curl -X PUT "http://localhost:8080/api/products/1" \
+  curl -X PUT "http://localhost:3223/api/products/1" \
        -H "Authorization: Bearer SEU_TOKEN" \
        -H "Content-Type: application/json" \
        -d '{"nome": "Arroz Integral", "preco": 12.00, "quantidade": 50, "status": "Ativo"}'
   ```
 - **Ver Detalhes de um Produto**
   ```bash
-  curl -X GET "http://localhost:8080/api/products/1" \
+  curl -X GET "http://localhost:3223/api/products/1" \
        -H "Authorization: Bearer SEU_TOKEN"
   ```
 - **Inativar Produto**
   ```bash
-  curl -X PATCH "http://localhost:8080/api/products/1/inactivate" \
+  curl -X PATCH "http://localhost:3223/api/products/1/inactivate" \
        -H "Authorization: Bearer SEU_TOKEN"
   ```
 
 ### 4️⃣ Realizar Venda
 - **Criar Venda**
   ```bash
-  curl -X POST "http://localhost:8080/api/sales" \
+  curl -X POST "http://localhost:3223/api/sales" \
        -H "Authorization: Bearer SEU_TOKEN" \
        -H "Content-Type: application/json" \
        -d '{"produtoId": 1, "quantidade": 2}'
@@ -130,9 +130,8 @@ Um seller autenticado pode:
 ---
 
 ## 🛠️ Tecnologias Utilizadas
-- **Back-end:** Kotlin + Spring Boot
-- **Front-end:** React.js
-- **Banco de Dados:** MySQL ou PostgreSQL
+- **Back-end:** Python + Flask
+- **Banco de Dados:** SQLite
 - **Autenticação:** JWT ou OAuth
 - **Mensageria:** Twilio (para envio do código de ativação no WhatsApp)
 

@@ -36,12 +36,16 @@ def create_seller():
 
     try:
         db.session.add(new_seller)
-        db.session.commit()
-
         send_activation_code(new_seller.celular, activation_code)
+
+        db.session.commit()
 
         return jsonify({'message': 'Cadastro realizado! Verifique seu WhatsApp para o código de ativação.'}), 201
 
+    except ValueError as e:
+        db.session.rollback()
+        print(f"DEBUG: Config Error - {e}")
+        return jsonify({'error': str(e)}), 500
     except TwilioRestException as e:
         db.session.rollback()
         print(f"DEBUG: Twilio API Error - {e}")

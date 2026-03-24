@@ -1,0 +1,27 @@
+Criador de sellers
+POST
+{
+  "nome": "",
+  "cnpj": "12345678000199",
+  "email": "@email.com",
+  "celular": "11999999999",
+  "senha": ""
+}
+
+Ativar sellers
+POST
+{
+  "celular": "11999999999",
+  "codigo": "1234"
+}
+
+Login sellers
+POST
+{
+  "email": "mercadinho@email.com",
+  "senha": "senha123"
+}
+
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc3NDM3NTc4OCwianRpIjoiYTJiNDYzZjEtNjkwNC00OGU4LWIwMjItY2RhNTFjNGQzNjA1IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MSwibmJmIjoxNzc0Mzc1Nzg4LCJjc3JmIjoiZGFhOTM2NjMtZDZhZi00ZDBlLWJhNzEtYTg1ZWQ2Y2FkMDNlIiwiZXhwIjoxNzc0Mzc2Njg4fQ.wnLQcrvdlssa0l8-bTMyWTuGeITxH2Y_MLMGQI92SoI"
+} TOKEN GERADO CAUSO O LOGIN DE CERTO

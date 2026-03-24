@@ -10,7 +10,10 @@ from dotenv import load_dotenv, find_dotenv
 def create_app():
     app = Flask(__name__)
 
-    app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY', 'uma-chave-secreta-para-funfar-:D')
+    load_dotenv(find_dotenv())
+
+    app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY')
+    JWTManager(app)
 
     init_db(app)
     init_routes(app)

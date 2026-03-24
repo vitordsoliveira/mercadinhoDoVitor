@@ -3,21 +3,25 @@ from twilio.rest import Client
 from dotenv import load_dotenv
 load_dotenv()
 
-ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
-AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
-TWILIO_WHATSAPP_NUMBER = os.getenv('TWILIO_WHATSAPP_NUMBER')
+def get_twilio_config():
+    account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+    auth_token = os.getenv('TWILIO_AUTH_TOKEN')
+    twilio_whatsapp_number = os.getenv('TWILIO_WHATSAPP_NUMBER')
 
-#validação de dados
-if not all([ACCOUNT_SID, AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER]):
-    raise ValueError("As variáveis de ambiente da Twilio (ACCOUNT_SID, AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER) não foram configuradas corretamente. Verifique seu arquivo .env")
+    if not all([account_sid, auth_token, twilio_whatsapp_number]):
+        raise ValueError(
+            "As variaveis de ambiente da Twilio (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_NUMBER) nao foram configuradas corretamente. Verifique seu arquivo .env"
+        )
 
-client = Client(ACCOUNT_SID, AUTH_TOKEN)
+    return account_sid, auth_token, twilio_whatsapp_number
 
 def send_activation_code(to_whatsapp_number: str, code: str):
     try:
-        message_body = f'Seu código de ativação para o Gestão de Estoque é: *{code}*'
+        account_sid, auth_token, twilio_whatsapp_number = get_twilio_config()
+        client = Client(account_sid, auth_token)
+        message_body = f'Seu código de ativação para a Gestão de Estoque é: *{code}*'
         message = client.messages.create(
-            from_=f'whatsapp:{TWILIO_WHATSAPP_NUMBER}',
+            from_=f'whatsapp:{twilio_whatsapp_number}',
             body=message_body,
             to=f'whatsapp:{to_whatsapp_number}'
         )
