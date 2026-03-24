@@ -81,3 +81,57 @@ def activate_seller():
         return jsonify({'message': 'Conta ativada com sucesso!'}), 200
     else:
         return jsonify({'error': 'Código de ativação inválido'}), 400
+
+
+@seller_bp.route('/api/sellers/<int:seller_id>', methods=['PUT'])
+def update_seller(seller_id):
+    data = request.get_json()
+
+    if not data:
+        return jsonify({'error': 'Nenhum dado enviado para atualização'}), 400
+
+    seller = Seller.query.get(seller_id)
+
+    if not seller:
+        return jsonify({'error': 'Seller não encontrado'}), 404
+
+    email = data.get('email', seller.email)
+    cnpj = data.get('cnpj', seller.cnpj)
+    celular = data.get('celular', seller.celular)
+
+    if celular and not celular.startswith('+'):
+        celular = f"+55{celular}"
+
+    seller_with_same_email = Seller.query.filter(Seller.email == email, Seller.id != seller_id).first()
+    seller_with_same_cnpj = Seller.query.filter(Seller.cnpj == cnpj, Seller.id != seller_id).first()
+    seller_with_same_celular = Seller.query.filter(Seller.celular == celular, Seller.id != seller_id).first()
+
+    if seller_with_same_email or seller_with_same_cnpj or seller_with_same_celular:
+        return jsonify({'error': 'E-mail, CNPJ ou Celular já cadastrado para outro seller'}), 409
+
+    seller.nome = data.get('nome', seller.nome)
+    seller.email = email
+    seller.cnpj = cnpj
+    seller.celular = celular
+    seller.status = data.get('status', seller.status)
+
+    if data.get('senha'):
+        seller.set_password(data['senha'])
+
+    try:
+        db.session.commit()
+        return jsonify({
+            'message': 'Seller atualizado com sucesso',
+            'seller': {
+                'id': seller.id,
+                'nome': seller.nome,
+                'cnpj': seller.cnpj,
+                'email': seller.email,
+                'celular': seller.celular,
+                'status': seller.status
+            }
+        }), 200
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        print(f"DEBUG: Database Error - {e}")
+        return jsonify({'error': 'Ocorreu um erro interno ao atualizar os dados.'}), 500
