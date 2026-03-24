@@ -12,7 +12,7 @@ seller_bp = Blueprint('seller_bp', __name__)
 def create_seller():
     data = request.get_json()
 
-    if not all(k in data for k in ['nome', 'cnpj', 'email', 'celular', 'senha']):
+    if not all(dados in data for dados in ['nome', 'cnpj', 'email', 'celular', 'senha']):
         return jsonify({'error': 'Dados incompletos'}), 400
 
     celular = data['celular']
