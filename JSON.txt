@@ -35,7 +35,7 @@ POST /api/auth/login
 {
   "email": "mercado@email.com",
   "senha": "senha123",
-  "token": "TOKEN_DO_SELLER"
+  "token": "JWT_GERADO"
 }
 
 Resposta do login
