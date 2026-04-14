@@ -1,11 +1,16 @@
+import os
+
+from dotenv import find_dotenv, load_dotenv
 from flask import Flask
 from flask_jwt_extended import JWTManager
+
 from data_base import init_db
-from src.routes import init_routes
-from src.Infrastructure.http.seller_controller import seller_bp
 from src.Infrastructure.http.auth_controller import auth_bp
-import os
-from dotenv import load_dotenv, find_dotenv
+from src.Infrastructure.http.product_controller import product_bp
+from src.Infrastructure.http.sale_controller import sale_bp
+from src.Infrastructure.http.seller_controller import seller_bp
+from src.routes import init_routes
+
 
 def create_app():
     app = Flask(__name__)
@@ -20,10 +25,14 @@ def create_app():
 
     app.register_blueprint(seller_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(product_bp)
+    app.register_blueprint(sale_bp)
 
     return app
 
+
 app = create_app()
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=3223)

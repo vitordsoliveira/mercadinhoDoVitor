@@ -1,27 +1,95 @@
-Criador de sellers
-POST
+Criar seller
+POST /api/sellers
 {
-  "nome": "",
+  "nome": "Mini Mercado X",
   "cnpj": "12345678000199",
-  "email": "@email.com",
+  "email": "mercado@email.com",
   "celular": "11999999999",
-  "senha": ""
+  "senha": "senha123"
 }
 
-Ativar sellers
-POST
+Ativar seller
+POST /api/sellers/activate
 {
   "celular": "11999999999",
   "codigo": "1234"
 }
 
-Login sellers
-POST
+Resposta da ativacao
 {
-  "email": "mercadinho@email.com",
-  "senha": "senha123"
+  "message": "Conta ativada com sucesso.",
+  "token": "TOKEN_DO_SELLER",
+  "access_token": "JWT_GERADO",
+  "seller": {
+    "id": 1,
+    "nome": "Mini Mercado X",
+    "cnpj": "12345678000199",
+    "email": "mercado@email.com",
+    "celular": "+5511999999999",
+    "status": "Ativo"
+  }
 }
 
+Login seller
+POST /api/auth/login
 {
-    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTc3NDM3NTc4OCwianRpIjoiYTJiNDYzZjEtNjkwNC00OGU4LWIwMjItY2RhNTFjNGQzNjA1IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6MSwibmJmIjoxNzc0Mzc1Nzg4LCJjc3JmIjoiZGFhOTM2NjMtZDZhZi00ZDBlLWJhNzEtYTg1ZWQ2Y2FkMDNlIiwiZXhwIjoxNzc0Mzc2Njg4fQ.wnLQcrvdlssa0l8-bTMyWTuGeITxH2Y_MLMGQI92SoI"
-} TOKEN GERADO CAUSO O LOGIN DE CERTO
+  "email": "mercado@email.com",
+  "senha": "senha123",
+  "token": "TOKEN_DO_SELLER"
+}
+
+Resposta do login
+{
+  "access_token": "JWT_GERADO",
+  "seller": {
+    "id": 1,
+    "nome": "Mini Mercado X",
+    "cnpj": "12345678000199",
+    "email": "mercado@email.com",
+    "celular": "+5511999999999",
+    "status": "Ativo",
+    "token": "TOKEN_DO_SELLER"
+  }
+}
+
+Cadastrar produto
+POST /api/products
+Authorization: Bearer JWT_GERADO
+{
+  "nome": "Arroz",
+  "preco": 10.5,
+  "quantidade": 100,
+  "status": "Ativo",
+  "imagem": "https://cdn.exemplo.com/arroz.png"
+}
+
+Listar produtos
+GET /api/products
+Authorization: Bearer JWT_GERADO
+
+Detalhar produto
+GET /api/products/1
+Authorization: Bearer JWT_GERADO
+
+Editar produto
+PUT /api/products/1
+Authorization: Bearer JWT_GERADO
+{
+  "nome": "Arroz Integral",
+  "preco": 12.0,
+  "quantidade": 50,
+  "status": "Ativo",
+  "imagem": "https://cdn.exemplo.com/arroz-integral.png"
+}
+
+Inativar produto
+PATCH /api/products/1/inactivate
+Authorization: Bearer JWT_GERADO
+
+Realizar venda
+POST /api/sales
+Authorization: Bearer JWT_GERADO
+{
+  "produtoId": 1,
+  "quantidade": 2
+}
