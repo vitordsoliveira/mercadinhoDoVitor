@@ -1,7 +1,7 @@
 import random
 
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import create_access_token
 from sqlalchemy.exc import SQLAlchemyError
 from twilio.base.exceptions import TwilioRestException
 
@@ -93,12 +93,10 @@ def activate_seller():
     db.session.commit()
 
     access_token = create_access_token(identity=str(seller.id))
-    refresh_token = create_refresh_token(identity=str(seller.id))
 
     return jsonify({
         'message': 'Conta ativada com sucesso.',
         'token': seller.api_token,
         'access_token': access_token,
-        'refresh_token': refresh_token,
         'seller': seller.to_dict(),
     }), 200

@@ -43,49 +43,18 @@ function buildErrorMessage(data, fallbackMessage) {
   return data.error || data.message || data.msg || fallbackMessage;
 }
 
-async function refreshAccessToken(baseUrl) {
+function expireStoredSession() {
   const storedSession = readStoredSession();
-
-  if (!storedSession.refreshToken) {
-    throw new Error('Sua sessao expirou. Faca login novamente.');
-  }
-
-  const response = await fetch(`${normalizeBaseUrl(baseUrl)}/api/auth/refresh`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${storedSession.refreshToken}`,
-    },
-  });
-
-  const data = await parseResponse(response);
-
-  if (!response.ok) {
-    writeStoredSession({
-      ...storedSession,
-      accessToken: '',
-      refreshToken: '',
-    });
-    throw new Error(buildErrorMessage(data, 'Nao foi possivel renovar a sessao.'));
-  }
-
-  const nextSession = {
+  writeStoredSession({
     ...storedSession,
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token || storedSession.refreshToken,
-    sellerToken: data.seller?.token || storedSession.sellerToken || '',
-    seller: data.seller || storedSession.seller || null,
-  };
-
-  writeStoredSession(nextSession);
-  return nextSession.accessToken;
+    accessToken: '',
+  });
 }
 
-async function request(baseUrl, path, options = {}, overrideToken = '') {
+async function request(baseUrl, path, options = {}) {
   const storedSession = readStoredSession();
   const bearerToken =
-    overrideToken ||
-    (options.auth === true ? options.token || storedSession.accessToken : options.token);
+    options.auth === true ? options.token || storedSession.accessToken : options.token;
 
   const headers = {
     Accept: 'application/json',
@@ -108,17 +77,9 @@ async function request(baseUrl, path, options = {}, overrideToken = '') {
 
   const data = await parseResponse(response);
 
-  if (response.status === 401 && options.auth === true && !options.skipRefresh) {
-    const refreshedAccessToken = await refreshAccessToken(baseUrl);
-    return request(
-      baseUrl,
-      path,
-      {
-        ...options,
-        skipRefresh: true,
-      },
-      refreshedAccessToken,
-    );
+  if (response.status === 401 && options.auth === true) {
+    expireStoredSession();
+    throw new Error('Sua sessao expirou. Faca login novamente.');
   }
 
   if (!response.ok) {

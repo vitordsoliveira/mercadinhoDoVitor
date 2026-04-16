@@ -7,7 +7,6 @@ const SESSION_UPDATE_EVENT = 'mercadinho:session-updated';
 
 const EMPTY_SESSION = {
   accessToken: '',
-  refreshToken: '',
   sellerToken: '',
   seller: null,
 };
@@ -120,7 +119,6 @@ function App() {
 
       setSession({
         accessToken: nextSession.accessToken || '',
-        refreshToken: nextSession.refreshToken || '',
         sellerToken: nextSession.sellerToken || '',
         seller: nextSession.seller || null,
       });
@@ -337,7 +335,6 @@ function App() {
 
     setSession({
       accessToken: data.access_token || '',
-      refreshToken: data.refresh_token || '',
       sellerToken,
       seller: data.seller || null,
     });

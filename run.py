@@ -1,5 +1,4 @@
 import os
-from datetime import timedelta
 
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask
@@ -20,12 +19,6 @@ def create_app():
     load_dotenv(find_dotenv())
 
     app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY')
-    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
-        minutes=int(os.getenv("JWT_ACCESS_TOKEN_MINUTES", "15"))
-    )
-    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(
-        days=int(os.getenv("JWT_REFRESH_TOKEN_DAYS", "30"))
-    )
     JWTManager(app)
     CORS(
         app,
