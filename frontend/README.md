@@ -1,10 +1,6 @@
 ## Como rodar
 
-1. Entre na pasta `frontend`
-2. Instale as dependencias com `npm install`
-3. Copie `.env.example` para `.env`
-4. Ajuste `VITE_API_URL` se a API estiver em outra URL
-5. Rode `npm run dev`
+1. Rode `npm run dev` na pasta frontend
 
 ## Fluxo da API
 
