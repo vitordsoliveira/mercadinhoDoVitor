@@ -1,7 +1,9 @@
 import os
+from datetime import timedelta
 
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from data_base import init_db
@@ -18,7 +20,23 @@ def create_app():
     load_dotenv(find_dotenv())
 
     app.config["JWT_SECRET_KEY"] = os.getenv('JWT_SECRET_KEY')
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+        minutes=int(os.getenv("JWT_ACCESS_TOKEN_MINUTES", "15"))
+    )
+    app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(
+        days=int(os.getenv("JWT_REFRESH_TOKEN_DAYS", "30"))
+    )
     JWTManager(app)
+    CORS(
+        app,
+        resources={
+            r"/api/*": {
+                "origins": os.getenv("CORS_ALLOWED_ORIGINS", "*"),
+                "allow_headers": ["Content-Type", "Authorization"],
+                "methods": ["GET", "POST", "PUT", "PATCH", "OPTIONS"],
+            }
+        },
+    )
 
     init_db(app)
     init_routes(app)
