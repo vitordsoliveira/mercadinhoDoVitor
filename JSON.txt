@@ -60,7 +60,8 @@ Authorization: Bearer JWT_GERADO
   "preco": 10.5,
   "quantidade": 100,
   "status": "Ativo",
-  "imagem": "https://cdn.exemplo.com/arroz.png"
+  "imagem": "https://raw.githubusercontent.com/vitordsoliveira/mercadinhoDoVitor/main/upload/arroz.jpeg
+"
 }
 
 Listar produtos
