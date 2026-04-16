@@ -1,7 +1,3 @@
-# Front-end React
-
-Este front foi criado para funcionar como um projeto separado, mesmo estando dentro do repositorio do backend por enquanto.
-
 ## Como rodar
 
 1. Entre na pasta `frontend`

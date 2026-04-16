@@ -523,15 +523,6 @@ function App() {
 
       <main className="app">
         <section className="hero-card">
-          <div className="hero-copy">
-            <span className="eyebrow">Front-end React separado do backend</span>
-            <h1>Controle simples para estoque, ativacao e vendas do seu mercadinho.</h1>
-            <p>
-              A interface conversa direto com a API Flask, guarda a sessao localmente
-              e deixa a URL do backend configuravel para voce separar essa pasta quando quiser.
-            </p>
-          </div>
-
           <div className="hero-status-grid">
             <article className={`status-card status-${apiStatus.tone}`}>
               <span className="status-label">Status da API</span>
