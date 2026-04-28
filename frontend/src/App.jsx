@@ -524,20 +524,6 @@ function App() {
       <main className="app">
         <section className="hero-card">
           <div className="hero-status-grid">
-            <article className={`status-card status-${apiStatus.tone}`}>
-              <span className="status-label">Status da API</span>
-              <strong>{apiStatus.label}</strong>
-              <p>{apiStatus.message}</p>
-            </article>
-
-            <article className="status-card">
-              <span className="status-label">Sessao atual</span>
-              <strong>{session.seller?.nome || 'Nenhum seller conectado'}</strong>
-              <p>
-                {session.seller?.email || 'Use as etapas de cadastro, ativacao ou login logo abaixo.'}
-              </p>
-            </article>
-
             <article className="status-card">
               <span className="status-label">Token do seller</span>
               <strong>{session.sellerToken ? 'Token salvo' : 'Aguardando ativacao'}</strong>
@@ -605,7 +591,7 @@ function App() {
               <form className="form-card" onSubmit={handleRegisterSubmit}>
                 <h3>Cadastrar seller</h3>
                 <label className="field">
-                  <span>Nome do mini mercado</span>
+                  <span>Nome do mercado</span>
                   <input
                     value={registerForm.nome}
                     onChange={(event) => updateRegisterField('nome', event.target.value)}
@@ -945,10 +931,6 @@ function App() {
           <section className="panel empty-session">
             <span className="panel-kicker">Pronto para conectar</span>
             <h2>Ative ou faca login em um seller para gerenciar os produtos.</h2>
-            <p>
-              O dashboard, o cadastro de produtos e o registro de vendas aparecem automaticamente assim
-              que existir uma sessao autenticada.
-            </p>
           </section>
         )}
       </main>
