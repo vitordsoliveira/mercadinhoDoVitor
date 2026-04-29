@@ -1,4 +1,4 @@
-import { useDeferredValue, useEffect, useState, useTransition } from 'react';
+import { useDeferredValue, useEffect, useRef, useState, useTransition } from 'react';
 import { mercadinhoApi } from './lib/api';
 
 const DEFAULT_API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:3223';
@@ -97,6 +97,7 @@ function App() {
   const [saleForm, setSaleForm] = useState(EMPTY_SALE_FORM);
   const [products, setProducts] = useState([]);
   const [editingProductId, setEditingProductId] = useState(null);
+  const fileInputRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState('');
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const [busyAction, setBusyAction] = useState('');
@@ -328,6 +329,29 @@ function App() {
   function resetProductEditor() {
     setEditingProductId(null);
     setProductForm(EMPTY_PRODUCT_FORM);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  function handleImageFileChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/png', 'image/jpeg', 'application/pdf'];
+    if (!allowedTypes.includes(file.type)) {
+      showFeedback('danger', 'Formato nao permitido. Use PNG, JPG, JPEG ou PDF.');
+      event.target.value = '';
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      showFeedback('danger', 'Arquivo muito grande. O limite e 10 MB.');
+      event.target.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => updateProductField('imagem', e.target.result);
+    reader.readAsDataURL(file);
   }
 
   function hydrateSession(data, fallbackToken = '') {
@@ -534,12 +558,20 @@ function App() {
               </p>
             </article>
           </div>
+          {session.accessToken ? (
+            <div className="hero-logout">
+              <button className="danger-button" type="button" onClick={handleLogout}>
+                Sair
+              </button>
+            </div>
+          ) : null}
         </section>
 
         {feedback.text ? (
           <div className={`feedback-banner feedback-${feedback.tone}`}>{feedback.text}</div>
         ) : null}
 
+        {!session.accessToken ? (
         <section className="content-grid">
 
           <article className="panel auth-panel">
@@ -548,11 +580,6 @@ function App() {
                 <span className="panel-kicker">Autenticacao</span>
                 <h2>Fluxo da conta do seller</h2>
               </div>
-              {session.accessToken ? (
-                <button className="danger-button" type="button" onClick={handleLogout}>
-                  Sair
-                </button>
-              ) : null}
             </div>
 
             <div className="auth-grid">
@@ -672,6 +699,7 @@ function App() {
             </div>
           </article>
         </section>
+        ) : null}
         {session.accessToken ? (
           <>
             <section className="content-grid">
@@ -729,14 +757,39 @@ function App() {
                       <option value="Inativo">Inativo</option>
                     </select>
                   </label>
-                  <label className="field field-span-2">
-                    <span>Imagem (URL opcional)</span>
-                    <input
-                      value={productForm.imagem}
-                      onChange={(event) => updateProductField('imagem', event.target.value)}
-                      placeholder="https://cdn.exemplo.com/arroz.png"
-                    />
-                  </label>
+                  <div className="field field-span-2">
+                    <span>Imagem do produto</span>
+                    {productForm.imagem ? (
+                      <div className="image-picker-preview">
+                        {productForm.imagem.startsWith('data:application/pdf') ? (
+                          <span className="image-preview-pdf">PDF selecionado</span>
+                        ) : (
+                          <img className="image-preview-thumb" src={productForm.imagem} alt="Preview" />
+                        )}
+                        <button
+                          className="ghost-button"
+                          type="button"
+                          onClick={() => {
+                            updateProductField('imagem', '');
+                            if (fileInputRef.current) fileInputRef.current.value = '';
+                          }}
+                        >
+                          Remover
+                        </button>
+                      </div>
+                    ) : null}
+                    <label className="image-picker-label">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.pdf"
+                        className="image-picker-input"
+                        onChange={handleImageFileChange}
+                      />
+                      Selecionar imagem
+                    </label>
+                    <p className="helper-text">PNG, JPG, JPEG ou PDF — maximo 10 MB.</p>
+                  </div>
 
                   <button className="primary-button field-span-2" disabled={busyAction === 'product'} type="submit">
                     {busyAction === 'product'

@@ -130,6 +130,11 @@ button {
   gap: 1rem;
 }
 
+.hero-logout {
+  align-self: start;
+  justify-self: end;
+}
+
 .status-card,
 .metric-card,
 .form-card,
@@ -275,6 +280,58 @@ button {
 
 .field-span-2 {
   grid-column: span 2;
+}
+
+.image-picker-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.85rem 0.95rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(57, 85, 64, 0.18);
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #314339;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.image-picker-label:hover {
+  border-color: rgba(22, 92, 61, 0.42);
+  box-shadow: 0 0 0 4px rgba(22, 92, 61, 0.08);
+}
+
+.image-picker-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.image-picker-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(57, 85, 64, 0.12);
+  border-radius: 10px;
+}
+
+.image-preview-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.image-preview-pdf {
+  font-size: 0.875rem;
+  color: #314339;
+  padding: 0.25rem 0.6rem;
+  background: rgba(22, 92, 61, 0.08);
+  border-radius: 6px;
 }
 
 .primary-button,
