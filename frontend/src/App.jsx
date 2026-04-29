@@ -541,43 +541,6 @@ function App() {
         ) : null}
 
         <section className="content-grid">
-          <article className="panel">
-            <div className="panel-heading">
-              <div>
-                <span className="panel-kicker">Configuracao</span>
-                <h2>Conexao com a API</h2>
-              </div>
-              <button className="ghost-button" type="button" onClick={checkApiHealth}>
-                Testar agora
-              </button>
-            </div>
-
-            <label className="field">
-              <span>URL base do backend</span>
-              <input
-                value={apiUrl}
-                onChange={(event) => setApiUrl(event.target.value)}
-                placeholder="http://127.0.0.1:3223"
-                type="url"
-              />
-            </label>
-
-            <div className="token-box">
-              <div>
-                <span className="token-label">Token salvo neste navegador</span>
-                <code>{session.sellerToken || loginForm.token || 'Nenhum token salvo ainda.'}</code>
-              </div>
-              <button className="secondary-button" type="button" onClick={handleCopyToken}>
-                Copiar token
-              </button>
-            </div>
-
-            {session.accessToken ? (
-              <button className="danger-button" type="button" onClick={handleLogout}>
-                Encerrar sessao
-              </button>
-            ) : null}
-          </article>
 
           <article className="panel auth-panel">
             <div className="panel-heading">
@@ -585,6 +548,11 @@ function App() {
                 <span className="panel-kicker">Autenticacao</span>
                 <h2>Fluxo da conta do seller</h2>
               </div>
+              {session.accessToken ? (
+                <button className="danger-button" type="button" onClick={handleLogout}>
+                  Sair
+                </button>
+              ) : null}
             </div>
 
             <div className="auth-grid">
@@ -704,30 +672,6 @@ function App() {
             </div>
           </article>
         </section>
-
-        <section className="stats-grid">
-          <article className="metric-card">
-            <span>Total de produtos</span>
-            <strong>{products.length}</strong>
-            <p>Itens listados para o seller autenticado.</p>
-          </article>
-          <article className="metric-card">
-            <span>Produtos ativos</span>
-            <strong>{totalProdutosAtivos}</strong>
-            <p>Disponiveis para venda neste momento.</p>
-          </article>
-          <article className="metric-card">
-            <span>Unidades em estoque</span>
-            <strong>{totalEstoque}</strong>
-            <p>Somatoria de todas as quantidades cadastradas.</p>
-          </article>
-          <article className="metric-card accent-card">
-            <span>Valor estimado em estoque</span>
-            <strong>{formatCurrency(valorEmEstoque)}</strong>
-            <p>{estoqueBaixo} produto(s) com estoque baixo.</p>
-          </article>
-        </section>
-
         {session.accessToken ? (
           <>
             <section className="content-grid">

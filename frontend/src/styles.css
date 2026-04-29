@@ -215,6 +215,10 @@ button {
   color: #173225;
 }
 
+.auth-panel {
+  grid-column: 1 / -1;
+}
+
 .auth-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
