@@ -22,11 +22,15 @@ def login_seller():
     if seller.status != 'Ativo':
         return jsonify({"error": "Sua conta nao esta ativa, ative primeiro"}), 403
 
-    if not seller.api_token:
+    provided_token = data.get('token', '').strip()
+
+    if provided_token and seller.api_token and seller.api_token != provided_token:
+        return jsonify({"error": "Token do seller invalido"}), 401
+
+    token_regenerated = not provided_token
+    if token_regenerated or not seller.api_token:
         seller.generate_api_token()
         db.session.commit()
-    elif seller.api_token != data.get('token'):
-        return jsonify({"error": "Token do seller invalido"}), 401
 
     access_token = create_access_token(identity=str(seller.id))
 
@@ -35,7 +39,7 @@ def login_seller():
         "seller": seller.to_dict(include_token=True),
     }
 
-    if not data.get('token'):
-        response_data["message"] = "Token gerado para a conta. Use este token nos proximos logins."
+    if token_regenerated:
+        response_data["message"] = "Token gerado para a conta. Guarde-o para os proximos logins."
 
     return jsonify(response_data), 200

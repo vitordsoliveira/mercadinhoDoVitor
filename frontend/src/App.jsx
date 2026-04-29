@@ -481,12 +481,26 @@ function App() {
           <div className="hero-status-grid">
             <article className="status-card">
               <span className="status-label">Token do seller</span>
-              <strong>{session.sellerToken ? 'Token salvo' : 'Aguardando ativacao'}</strong>
-              <p>
-                {session.sellerToken
-                  ? 'Guarde esse token: ele pode ser exigido nos proximos logins.'
-                  : 'Ative a conta para receber o token e manter os acessos futuros.'}
-              </p>
+              {session.sellerToken ? (
+                <>
+                  <strong className="token-value">{session.sellerToken}</strong>
+                  <button
+                    className="ghost-button token-copy-button"
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(session.sellerToken);
+                      showFeedback('success', 'Token copiado para a area de transferencia.');
+                    }}
+                  >
+                    Copiar token
+                  </button>
+                </>
+              ) : (
+                <>
+                  <strong>Aguardando ativacao</strong>
+                  <p>Ative a conta para receber o token e manter os acessos futuros.</p>
+                </>
+              )}
             </article>
           </div>
           {session.accessToken ? (
