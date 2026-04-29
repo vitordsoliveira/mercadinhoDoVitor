@@ -76,7 +76,6 @@ button {
 
 .hero-card,
 .panel,
-.metric-card,
 .feedback-banner {
   animation: fadeUp 560ms ease both;
 }
@@ -95,8 +94,7 @@ button {
 
 .eyebrow,
 .panel-kicker,
-.status-label,
-.token-label {
+.status-label {
   display: inline-block;
   text-transform: uppercase;
   letter-spacing: 0.14em;
@@ -104,25 +102,10 @@ button {
   color: #5c7565;
 }
 
-.hero-copy h1,
 .panel h2,
 .empty-session h2,
 .product-header h3 {
   font-family: Georgia, "Times New Roman", serif;
-}
-
-.hero-copy h1 {
-  margin: 0.5rem 0 1rem;
-  font-size: clamp(2.2rem, 4vw, 3.7rem);
-  line-height: 1.05;
-  color: #173225;
-}
-
-.hero-copy p {
-  margin: 0;
-  max-width: 56ch;
-  color: #405347;
-  font-size: 1rem;
 }
 
 .hero-status-grid {
@@ -136,7 +119,6 @@ button {
 }
 
 .status-card,
-.metric-card,
 .form-card,
 .product-card {
   border: 1px solid rgba(22, 92, 61, 0.1);
@@ -388,57 +370,6 @@ button {
   font-size: 0.93rem;
 }
 
-.token-box {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 1rem;
-  padding: 1rem;
-  border: 1px dashed rgba(22, 92, 61, 0.2);
-  border-radius: 18px;
-  background: rgba(236, 246, 240, 0.72);
-  margin-top: 1rem;
-}
-
-.token-box code {
-  display: block;
-  margin-top: 0.45rem;
-  overflow-wrap: anywhere;
-  color: #1c4631;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1rem;
-  margin-top: 1.25rem;
-}
-
-.metric-card {
-  padding: 1.15rem;
-}
-
-.metric-card span {
-  color: #56675d;
-}
-
-.metric-card strong {
-  display: block;
-  margin-top: 0.35rem;
-  font-size: 1.8rem;
-  color: #193428;
-}
-
-.metric-card p {
-  margin: 0.4rem 0 0;
-  color: #63746b;
-}
-
-.accent-card {
-  background:
-    linear-gradient(160deg, rgba(244, 162, 89, 0.16), rgba(255, 255, 255, 0.94)),
-    rgba(255, 255, 255, 0.88);
-}
-
 .sale-form {
   gap: 1rem;
 }
@@ -576,7 +507,6 @@ button {
   .hero-card,
   .content-grid,
   .auth-grid,
-  .stats-grid,
   .catalog-grid {
     grid-template-columns: 1fr;
   }
@@ -603,7 +533,6 @@ button {
 
   .panel-heading,
   .catalog-actions,
-  .token-box,
   .product-card,
   .product-actions {
     display: flex;

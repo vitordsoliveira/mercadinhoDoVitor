@@ -75,14 +75,9 @@ function formatCurrency(value) {
 }
 
 function App() {
-  const [apiUrl, setApiUrl] = useState(() => readStorage('mercadinho.apiUrl', DEFAULT_API_URL));
+  const apiUrl = readStorage('mercadinho.apiUrl', DEFAULT_API_URL);
   const [session, setSession] = useState(() => readStorage('mercadinho.session', EMPTY_SESSION));
   const [feedback, setFeedback] = useState(EMPTY_FEEDBACK);
-  const [apiStatus, setApiStatus] = useState({
-    tone: 'neutral',
-    label: 'Aguardando conexao',
-    message: 'Defina a URL da API e teste a comunicacao.',
-  });
   const [registerForm, setRegisterForm] = useState(EMPTY_REGISTER_FORM);
   const [activateForm, setActivateForm] = useState(EMPTY_ACTIVATE_FORM);
   const [loginForm, setLoginForm] = useState(() => {
@@ -103,10 +98,6 @@ function App() {
   const [busyAction, setBusyAction] = useState('');
   const [productsLoading, setProductsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    saveStorage('mercadinho.apiUrl', apiUrl);
-  }, [apiUrl]);
 
   useEffect(() => {
     saveStorage(SESSION_STORAGE_KEY, session);
@@ -165,10 +156,6 @@ function App() {
   }, [feedback]);
 
   useEffect(() => {
-    checkApiHealth();
-  }, [apiUrl]);
-
-  useEffect(() => {
     if (!session.accessToken) {
       setProducts([]);
       return;
@@ -213,14 +200,6 @@ function App() {
     return searchBase.includes(deferredSearchTerm.trim().toLowerCase());
   });
 
-  const totalEstoque = products.reduce((sum, product) => sum + product.quantidade, 0);
-  const totalProdutosAtivos = products.filter((product) => product.status === 'Ativo').length;
-  const estoqueBaixo = products.filter((product) => product.quantidade <= 5).length;
-  const valorEmEstoque = products.reduce(
-    (sum, product) => sum + Number(product.preco) * Number(product.quantidade),
-    0,
-  );
-
   async function runAction(actionName, callback) {
     setBusyAction(actionName);
 
@@ -235,38 +214,6 @@ function App() {
 
   function showFeedback(tone, text) {
     setFeedback({ tone, text });
-  }
-
-  async function checkApiHealth() {
-    if (!apiUrl.trim()) {
-      setApiStatus({
-        tone: 'neutral',
-        label: 'Informe a URL',
-        message: 'A conexao sera testada assim que a URL estiver preenchida.',
-      });
-      return;
-    }
-
-    setApiStatus({
-      tone: 'neutral',
-      label: 'Conferindo API',
-      message: 'Tentando contato com o backend.',
-    });
-
-    try {
-      const data = await mercadinhoApi.health(apiUrl);
-      setApiStatus({
-        tone: 'success',
-        label: 'API online',
-        message: data.message || 'Backend respondendo normalmente.',
-      });
-    } catch (error) {
-      setApiStatus({
-        tone: 'danger',
-        label: 'API offline',
-        message: error.message,
-      });
-    }
   }
 
   async function loadProducts(tokenOverride) {
@@ -522,22 +469,6 @@ function App() {
     setEditingProductId(null);
     setSaleForm(EMPTY_SALE_FORM);
     showFeedback('neutral', 'Sessao encerrada neste navegador.');
-  }
-
-  async function handleCopyToken() {
-    const tokenToCopy = session.sellerToken || loginForm.token;
-
-    if (!tokenToCopy) {
-      showFeedback('danger', 'Nenhum token disponivel para copiar.');
-      return;
-    }
-
-    try {
-      await navigator.clipboard.writeText(tokenToCopy);
-      showFeedback('success', 'Token copiado para a area de transferencia.');
-    } catch (error) {
-      showFeedback('danger', 'Nao foi possivel copiar o token automaticamente.');
-    }
   }
 
   return (
