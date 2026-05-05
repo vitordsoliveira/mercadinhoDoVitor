@@ -74,6 +74,20 @@ function formatCurrency(value) {
   }).format(Number(value || 0));
 }
 
+function formatDateTime(value) {
+  try {
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(value));
+  } catch {
+    return '—';
+  }
+}
+
 function App() {
   const apiUrl = readStorage('mercadinho.apiUrl', DEFAULT_API_URL);
   const [session, setSession] = useState(() => readStorage('mercadinho.session', EMPTY_SESSION));
@@ -98,6 +112,8 @@ function App() {
   const [busyAction, setBusyAction] = useState('');
   const [productsLoading, setProductsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [sales, setSales] = useState([]);
+  const [salesLoading, setSalesLoading] = useState(false);
 
   useEffect(() => {
     saveStorage(SESSION_STORAGE_KEY, session);
@@ -158,10 +174,12 @@ function App() {
   useEffect(() => {
     if (!session.accessToken) {
       setProducts([]);
+      setSales([]);
       return;
     }
 
     loadProducts();
+    loadSales();
   }, [apiUrl, session.accessToken]);
 
   useEffect(() => {
@@ -235,6 +253,26 @@ function App() {
       showFeedback('danger', error.message);
     } finally {
       setProductsLoading(false);
+    }
+  }
+
+  async function loadSales(tokenOverride) {
+    const effectiveToken =
+      typeof tokenOverride === 'string' && tokenOverride ? tokenOverride : session.accessToken;
+
+    if (!effectiveToken) {
+      return;
+    }
+
+    setSalesLoading(true);
+
+    try {
+      const data = await mercadinhoApi.listSales(apiUrl, effectiveToken);
+      setSales(data.sales || []);
+    } catch (error) {
+      showFeedback('danger', error.message);
+    } finally {
+      setSalesLoading(false);
     }
   }
 
@@ -358,6 +396,7 @@ function App() {
       setActivateForm(EMPTY_ACTIVATE_FORM);
       showFeedback('success', data.message || 'Conta ativada com sucesso.');
       await loadProducts(data.access_token);
+      await loadSales(data.access_token);
     });
   }
 
@@ -386,6 +425,7 @@ function App() {
       }));
       showFeedback('success', data.message || 'Login realizado com sucesso.');
       await loadProducts(data.access_token);
+      await loadSales(data.access_token);
     });
   }
 
@@ -449,6 +489,7 @@ function App() {
         quantidade: '1',
       }));
       await loadProducts();
+      await loadSales();
     });
   }
 
@@ -466,6 +507,7 @@ function App() {
   function handleLogout() {
     setSession(EMPTY_SESSION);
     setProducts([]);
+    setSales([]);
     setEditingProductId(null);
     setSaleForm(EMPTY_SALE_FORM);
     showFeedback('neutral', 'Sessao encerrada neste navegador.');
@@ -477,40 +519,9 @@ function App() {
       <div className="page-glow page-glow-right" />
 
       <main className="app">
-        <section className="hero-card">
-          <div className="hero-status-grid">
-            <article className="status-card">
-              <span className="status-label">Token do seller</span>
-              {session.sellerToken ? (
-                <>
-                  <strong className="token-value">{session.sellerToken}</strong>
-                  <button
-                    className="ghost-button token-copy-button"
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(session.sellerToken);
-                      showFeedback('success', 'Token copiado para a area de transferencia.');
-                    }}
-                  >
-                    Copiar token
-                  </button>
-                </>
-              ) : (
-                <>
-                  <strong>Aguardando ativacao</strong>
-                  <p>Ative a conta para receber o token e manter os acessos futuros.</p>
-                </>
-              )}
-            </article>
-          </div>
-          {session.accessToken ? (
-            <div className="hero-logout">
               <button className="danger-button" type="button" onClick={handleLogout}>
                 Sair
               </button>
-            </div>
-          ) : null}
-        </section>
 
         {feedback.text ? (
           <div className={`feedback-banner feedback-${feedback.tone}`}>{feedback.text}</div>
@@ -866,6 +877,57 @@ function App() {
                 </div>
               ) : (
                 <div className="empty-state">Nenhum produto encontrado para o filtro atual.</div>
+              )}
+            </section>
+
+            <section className="panel" style={{ marginTop: '1.25rem' }}>
+              <div className="panel-heading">
+                <div>
+                  <span className="panel-kicker">Historico</span>
+                  <h2>Minhas vendas</h2>
+                </div>
+                <button className="ghost-button" type="button" onClick={loadSales}>
+                  Atualizar lista
+                </button>
+              </div>
+
+              {salesLoading ? (
+                <div className="empty-state">Carregando vendas...</div>
+              ) : sales.length ? (
+                <div className="sales-list">
+                  {sales.map((sale) => {
+                    const product = sale.produto || {};
+                    const imagem = product.imagem || sale.produto_imagem || '';
+                    const nome = product.nome || sale.produto_nome || `Produto #${sale.produto_id || sale.produtoId || ''}`;
+                    const quantidade = sale.quantidade;
+                    const valorTotal = sale.valor_total ?? sale.valorTotal;
+                    const createdAt = sale.created_at || sale.createdAt;
+
+                    return (
+                      <div className="sale-row" key={sale.id}>
+                        <div className="sale-media">
+                          {imagem ? (
+                            <img alt={nome} src={imagem} />
+                          ) : (
+                            <div className="sale-placeholder">{nome.slice(0, 2).toUpperCase()}</div>
+                          )}
+                        </div>
+                        <div className="sale-info">
+                          <span className="sale-product-name">{nome}</span>
+                        </div>
+                        <div className="sale-stats">
+                          <span className="sale-qty">{quantidade} un.</span>
+                          <span className="sale-value">{formatCurrency(valorTotal)}</span>
+                        </div>
+                        <div className="sale-time">
+                          {createdAt ? formatDateTime(createdAt) : '—'}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="empty-state">Nenhuma venda registrada ainda.</div>
               )}
             </section>
           </>

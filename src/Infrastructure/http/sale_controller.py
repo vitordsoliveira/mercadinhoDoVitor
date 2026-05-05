@@ -9,6 +9,17 @@ from src.Infrastructure.Model.sale import Sale
 sale_bp = Blueprint('sale_bp', __name__)
 
 
+@sale_bp.route('/api/sales', methods=['GET'])
+@jwt_required()
+def list_sales():
+    seller, error_response = get_authenticated_seller()
+    if error_response:
+        return error_response
+
+    sales = Sale.query.filter_by(seller_id=seller.id).order_by(Sale.created_at.desc()).all()
+    return jsonify({"sales": [s.to_dict() for s in sales]}), 200
+
+
 @sale_bp.route('/api/sales', methods=['POST'])
 @jwt_required()
 def create_sale():

@@ -151,4 +151,10 @@ export const mercadinhoApi = {
       body: payload,
     });
   },
+  listSales(baseUrl, token) {
+    return request(baseUrl, '/api/sales', {
+      token,
+      auth: true,
+    });
+  },
 };

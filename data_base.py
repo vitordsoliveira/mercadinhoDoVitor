@@ -26,8 +26,15 @@ def run_sqlite_migrations():
 
     seller_columns = {column['name'] for column in inspector.get_columns('sellers')}
 
-    if 'api_token' in seller_columns:
+    if 'api_token' not in seller_columns:
+        with db.engine.begin() as connection:
+            connection.execute(text("ALTER TABLE sellers ADD COLUMN api_token VARCHAR(64)"))
+
+    if 'sales' not in inspector.get_table_names():
         return
 
-    with db.engine.begin() as connection:
-        connection.execute(text("ALTER TABLE sellers ADD COLUMN api_token VARCHAR(64)"))
+    sale_columns = {column['name'] for column in inspector.get_columns('sales')}
+
+    if 'created_at' not in sale_columns:
+        with db.engine.begin() as connection:
+            connection.execute(text("ALTER TABLE sales ADD COLUMN created_at DATETIME"))

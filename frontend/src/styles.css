@@ -486,6 +486,81 @@ button {
   gap: 0.75rem;
 }
 
+.sales-list {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.sale-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(22, 92, 61, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.sale-media img {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  object-fit: cover;
+  display: block;
+}
+
+.sale-placeholder {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(22, 92, 61, 0.16), rgba(244, 162, 89, 0.24));
+  color: #2b4d3b;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sale-info {
+  min-width: 0;
+}
+
+.sale-product-name {
+  display: block;
+  font-weight: 600;
+  color: #173225;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sale-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.sale-qty {
+  font-size: 0.88rem;
+  color: #617267;
+}
+
+.sale-value {
+  font-weight: 700;
+  color: #165c3d;
+  white-space: nowrap;
+}
+
+.sale-time {
+  font-size: 0.85rem;
+  color: #617267;
+  white-space: nowrap;
+  text-align: right;
+}
+
 .empty-state,
 .empty-session {
   text-align: center;
@@ -550,6 +625,22 @@ button {
   .product-actions {
     display: flex;
     flex-direction: column;
+  }
+
+  .sale-row {
+    grid-template-columns: 48px 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .sale-stats {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .sale-time {
+    grid-column: 2;
+    text-align: left;
   }
 
   .catalog-actions {
