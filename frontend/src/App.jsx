@@ -519,6 +519,10 @@ function App() {
       <div className="page-glow page-glow-right" />
 
       <main className="app">
+        <h1 className="app-title">
+          {session.seller?.nome || 'Mercadinho do Vitor'}
+        </h1>
+
               <button className="danger-button" type="button" onClick={handleLogout}>
                 Sair
               </button>
