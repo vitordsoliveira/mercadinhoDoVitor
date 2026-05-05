@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 from data_base import db
 
@@ -11,7 +11,7 @@ class Sale(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantidade_vendida = db.Column(db.Integer, nullable=False)
     preco_produto_momento_venda = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at = db.Column(db.DateTime, nullable=False, default=lambda: datetime.now(timezone(timedelta(hours=-3))))
 
     def to_dict(self):
         preco_unitario = round(float(self.preco_produto_momento_venda), 2)
