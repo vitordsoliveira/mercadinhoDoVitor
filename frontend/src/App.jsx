@@ -520,7 +520,7 @@ function App() {
 
       <main className="app">
         <h1 className="app-title">
-          {session.seller?.nome || 'Mercadinho do Vitor'}
+          {session.seller?.nome || 'Mercadinho 🚽🪠'}
         </h1>
 
               <button className="danger-button" type="button" onClick={handleLogout}>
@@ -538,7 +538,7 @@ function App() {
             <div className="panel-heading">
               <div>
                 <span className="panel-kicker">Autenticacao</span>
-                <h2>Fluxo da conta do seller</h2>
+                <h2>Conta do Seller</h2>
               </div>
             </div>
 
@@ -640,18 +640,6 @@ function App() {
                     placeholder="Sua senha"
                   />
                 </label>
-                <label className="field">
-                  <span>Token do seller</span>
-                  <input
-                    value={loginForm.token}
-                    onChange={(event) => updateLoginField('token', event.target.value)}
-                    placeholder="Token retornado pela API"
-                  />
-                </label>
-                <p className="helper-text">
-                  Se esse token ja estiver salvo no navegador, o front envia automaticamente no login.
-                </p>
-
                 <button className="primary-button" disabled={busyAction === 'login'} type="submit">
                   {busyAction === 'login' ? 'Entrando...' : 'Fazer login'}
                 </button>
