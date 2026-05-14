@@ -115,7 +115,6 @@ Authorization: Bearer JWT_GERADO
   "quantidade": 3,
   "precoUnitario": 9.99
 }
-(produtoId, quantidade e precoUnitario sao opcionais, mas ao menos um deve ser enviado)
 
 Cancelar venda (restaura estoque)
 DELETE /api/sales/1
@@ -133,5 +132,3 @@ Authorization: Bearer JWT_GERADO
   "email": "novo@email.com",
   "celular": "11988887777",
   "senha": "novaSenha123"
-}
-(todos os campos sao opcionais, mas ao menos um deve ser enviado)
