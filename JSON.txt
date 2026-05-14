@@ -132,3 +132,4 @@ Authorization: Bearer JWT_GERADO
   "email": "novo@email.com",
   "celular": "11988887777",
   "senha": "novaSenha123"
+}
