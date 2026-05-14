@@ -94,3 +94,13 @@ Authorization: Bearer JWT_GERADO
   "produtoId": 1,
   "quantidade": 2
 }
+
+Editar venda
+PUT /api/sales/1
+Authorization: Bearer JWT_GERADO
+{
+  "produtoId": 2,
+  "quantidade": 3,
+  "precoUnitario": 9.99
+}
+(produtoId, quantidade e precoUnitario sao opcionais, mas ao menos um deve ser enviado)

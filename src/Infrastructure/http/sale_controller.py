@@ -68,3 +68,86 @@ def create_sale():
         "sale": sale.to_dict(),
         "product": product.to_dict(),
     }), 201
+
+
+@sale_bp.route('/api/sales/<int:sale_id>', methods=['PUT'])
+@jwt_required()
+def update_sale(sale_id):
+    seller, error_response = get_authenticated_seller()
+    if error_response:
+        return error_response
+
+    sale = Sale.query.filter_by(id=sale_id, seller_id=seller.id).first()
+    if not sale:
+        return jsonify({"error": "Venda nao encontrada"}), 404
+
+    data = request.get_json() or {}
+    new_product_id = parse_quantity(data.get('produtoId', data.get('produto_id')))
+    new_quantity = parse_quantity(data.get('quantidade'))
+    new_preco = data.get('precoUnitario', data.get('preco_unitario'))
+
+    if new_preco is not None:
+        try:
+            new_preco = float(new_preco)
+        except (ValueError, TypeError):
+            return jsonify({"error": "Preco unitario invalido"}), 400
+        if new_preco <= 0:
+            return jsonify({"error": "Preco unitario deve ser maior que zero"}), 400
+
+    if new_product_id == sale.product_id:
+        new_product_id = None
+
+    if new_product_id is None and new_quantity is None and new_preco is None:
+        return jsonify({"error": "Nenhum campo para atualizar"}), 400
+
+    if new_quantity is not None and new_quantity <= 0:
+        return jsonify({"error": "Quantidade vendida deve ser maior que zero"}), 400
+
+    current_product = Product.query.filter_by(id=sale.product_id, seller_id=seller.id).first()
+
+    if new_product_id is not None:
+        if new_product_id <= 0:
+            return jsonify({"error": "Produto invalido"}), 400
+
+        new_product = Product.query.filter_by(id=new_product_id, seller_id=seller.id).first()
+        if not new_product:
+            return jsonify({"error": "Produto nao encontrado"}), 404
+
+        if new_product.status != 'Ativo':
+            return jsonify({"error": "Produtos inativados nao podem ser vendidos"}), 400
+
+        qty_to_use = new_quantity if new_quantity is not None else sale.quantidade_vendida
+
+        if qty_to_use > new_product.quantidade:
+            return jsonify({"error": "Nao e possivel vender mais do que a quantidade em estoque"}), 400
+
+        current_product.quantidade += sale.quantidade_vendida
+        new_product.quantidade -= qty_to_use
+
+        sale.product_id = new_product_id
+        sale.quantidade_vendida = qty_to_use
+        sale.preco_produto_momento_venda = new_preco if new_preco is not None else new_product.preco
+
+        updated_product = new_product
+    else:
+        if new_quantity is not None:
+            diff = new_quantity - sale.quantidade_vendida
+
+            if diff > 0 and diff > current_product.quantidade:
+                return jsonify({"error": "Nao e possivel vender mais do que a quantidade em estoque"}), 400
+
+            current_product.quantidade -= diff
+            sale.quantidade_vendida = new_quantity
+
+        if new_preco is not None:
+            sale.preco_produto_momento_venda = new_preco
+
+        updated_product = current_product
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "Venda atualizada com sucesso",
+        "sale": sale.to_dict(),
+        "product": updated_product.to_dict(),
+    }), 200
