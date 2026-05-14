@@ -87,6 +87,18 @@ Inativar produto
 PATCH /api/products/1/inactivate
 Authorization: Bearer JWT_GERADO
 
+Reativar produto
+PATCH /api/products/1/activate
+Authorization: Bearer JWT_GERADO
+
+Listar vendas
+GET /api/sales
+Authorization: Bearer JWT_GERADO
+
+Detalhar venda
+GET /api/sales/1
+Authorization: Bearer JWT_GERADO
+
 Realizar venda
 POST /api/sales
 Authorization: Bearer JWT_GERADO
@@ -104,3 +116,22 @@ Authorization: Bearer JWT_GERADO
   "precoUnitario": 9.99
 }
 (produtoId, quantidade e precoUnitario sao opcionais, mas ao menos um deve ser enviado)
+
+Cancelar venda (restaura estoque)
+DELETE /api/sales/1
+Authorization: Bearer JWT_GERADO
+
+Ver perfil do seller
+GET /api/sellers/me
+Authorization: Bearer JWT_GERADO
+
+Editar perfil do seller
+PUT /api/sellers/me
+Authorization: Bearer JWT_GERADO
+{
+  "nome": "Novo Nome",
+  "email": "novo@email.com",
+  "celular": "11988887777",
+  "senha": "novaSenha123"
+}
+(todos os campos sao opcionais, mas ao menos um deve ser enviado)

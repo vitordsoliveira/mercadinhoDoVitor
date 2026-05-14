@@ -1,12 +1,12 @@
 import random
 
 from flask import Blueprint, jsonify, request
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required
 from sqlalchemy.exc import SQLAlchemyError
 from twilio.base.exceptions import TwilioRestException
 
 from data_base import db
-from src.Infrastructure.http.auth_utils import normalize_phone_number
+from src.Infrastructure.http.auth_utils import get_authenticated_seller, normalize_phone_number
 from src.Infrastructure.http.whats_app import send_activation_code
 from src.Infrastructure.Model.seller import Seller
 
@@ -99,4 +99,67 @@ def activate_seller():
         'token': seller.api_token,
         'access_token': access_token,
         'seller': seller.to_dict(),
+    }), 200
+
+
+@seller_bp.route('/api/sellers/me', methods=['GET'])
+@jwt_required()
+def get_profile():
+    seller, error_response = get_authenticated_seller()
+    if error_response:
+        return error_response
+
+    return jsonify({'seller': seller.to_dict(include_token=True)}), 200
+
+
+@seller_bp.route('/api/sellers/me', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    seller, error_response = get_authenticated_seller()
+    if error_response:
+        return error_response
+
+    data = request.get_json() or {}
+    updated = False
+
+    if 'nome' in data:
+        nome = str(data['nome'] or '').strip()
+        if not nome:
+            return jsonify({'error': 'Nome nao pode ser vazio'}), 400
+        seller.nome = nome
+        updated = True
+
+    if 'email' in data:
+        email = str(data['email'] or '').strip()
+        if not email:
+            return jsonify({'error': 'Email nao pode ser vazio'}), 400
+        conflict = Seller.query.filter(Seller.email == email, Seller.id != seller.id).first()
+        if conflict:
+            return jsonify({'error': 'Email ja cadastrado'}), 409
+        seller.email = email
+        updated = True
+
+    if 'celular' in data:
+        celular = normalize_phone_number(data['celular'])
+        conflict = Seller.query.filter(Seller.celular == celular, Seller.id != seller.id).first()
+        if conflict:
+            return jsonify({'error': 'Celular ja cadastrado'}), 409
+        seller.celular = celular
+        updated = True
+
+    if 'senha' in data:
+        senha = str(data['senha'] or '')
+        if not senha:
+            return jsonify({'error': 'Senha nao pode ser vazia'}), 400
+        seller.set_password(senha)
+        updated = True
+
+    if not updated:
+        return jsonify({'error': 'Nenhum campo para atualizar'}), 400
+
+    db.session.commit()
+
+    return jsonify({
+        'message': 'Perfil atualizado com sucesso',
+        'seller': seller.to_dict(include_token=True),
     }), 200

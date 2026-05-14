@@ -163,3 +163,23 @@ def inactivate_product(product_id):
         "message": "Produto inativado com sucesso",
         "product": product.to_dict(),
     }), 200
+
+
+@product_bp.route('/api/products/<int:product_id>/activate', methods=['PATCH'])
+@jwt_required()
+def activate_product(product_id):
+    seller, error_response = get_authenticated_seller()
+    if error_response:
+        return error_response
+
+    product = _find_owned_product(product_id, seller.id)
+    if not product:
+        return jsonify({"error": "Produto nao encontrado"}), 404
+
+    product.status = 'Ativo'
+    db.session.commit()
+
+    return jsonify({
+        "message": "Produto reativado com sucesso",
+        "product": product.to_dict(),
+    }), 200

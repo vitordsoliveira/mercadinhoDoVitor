@@ -20,6 +20,20 @@ def list_sales():
     return jsonify({"sales": [s.to_dict() for s in sales]}), 200
 
 
+@sale_bp.route('/api/sales/<int:sale_id>', methods=['GET'])
+@jwt_required()
+def get_sale(sale_id):
+    seller, error_response = get_authenticated_seller()
+    if error_response:
+        return error_response
+
+    sale = Sale.query.filter_by(id=sale_id, seller_id=seller.id).first()
+    if not sale:
+        return jsonify({"error": "Venda nao encontrada"}), 404
+
+    return jsonify({"sale": sale.to_dict()}), 200
+
+
 @sale_bp.route('/api/sales', methods=['POST'])
 @jwt_required()
 def create_sale():
@@ -151,3 +165,24 @@ def update_sale(sale_id):
         "sale": sale.to_dict(),
         "product": updated_product.to_dict(),
     }), 200
+
+
+@sale_bp.route('/api/sales/<int:sale_id>', methods=['DELETE'])
+@jwt_required()
+def cancel_sale(sale_id):
+    seller, error_response = get_authenticated_seller()
+    if error_response:
+        return error_response
+
+    sale = Sale.query.filter_by(id=sale_id, seller_id=seller.id).first()
+    if not sale:
+        return jsonify({"error": "Venda nao encontrada"}), 404
+
+    product = Product.query.filter_by(id=sale.product_id, seller_id=seller.id).first()
+    if product:
+        product.quantidade += sale.quantidade_vendida
+
+    db.session.delete(sale)
+    db.session.commit()
+
+    return jsonify({"message": "Venda cancelada e estoque restaurado com sucesso"}), 200
