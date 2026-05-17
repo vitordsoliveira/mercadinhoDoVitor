@@ -7,7 +7,7 @@ from twilio.base.exceptions import TwilioRestException
 
 from data_base import db
 from src.Infrastructure.http.auth_utils import get_authenticated_seller, normalize_phone_number
-from src.Infrastructure.http.whats_app import send_activation_code
+from src.Infrastructure.http.whats_app import send_activation_code, send_password_change_code
 from src.Infrastructure.Model.seller import Seller
 
 seller_bp = Blueprint('seller_bp', __name__)
@@ -112,6 +112,26 @@ def get_profile():
     return jsonify({'seller': seller.to_dict(include_token=True)}), 200
 
 
+@seller_bp.route('/api/sellers/me/request-password-change', methods=['POST'])
+@jwt_required()
+def request_password_change():
+    seller, error_response = get_authenticated_seller()
+    if error_response:
+        return error_response
+
+    code = str(random.randint(1000, 9999))
+    seller.activation_code = code
+
+    try:
+        send_password_change_code(seller.celular, code)
+        db.session.commit()
+        return jsonify({'message': 'Código enviado para o seu WhatsApp. Use-o para confirmar a troca de senha.'}), 200
+    except TwilioRestException as error:
+        db.session.rollback()
+        print(f"DEBUG: Twilio API Error - {error}")
+        return jsonify({'error': 'Falha ao enviar o código. Tente novamente.'}), 500
+
+
 @seller_bp.route('/api/sellers/me', methods=['PUT'])
 @jwt_required()
 def update_profile():
@@ -151,7 +171,16 @@ def update_profile():
         senha = str(data['senha'] or '')
         if not senha:
             return jsonify({'error': 'Senha nao pode ser vazia'}), 400
+
+        codigo = str(data.get('codigo') or '').strip()
+        if not codigo:
+            return jsonify({'error': 'Informe o codigo enviado ao seu WhatsApp para trocar a senha'}), 400
+
+        if not seller.activation_code or seller.activation_code != codigo:
+            return jsonify({'error': 'Codigo invalido'}), 400
+
         seller.set_password(senha)
+        seller.activation_code = None
         updated = True
 
     if not updated:

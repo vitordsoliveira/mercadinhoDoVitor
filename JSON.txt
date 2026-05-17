@@ -112,8 +112,7 @@ PUT /api/sales/1
 Authorization: Bearer JWT_GERADO
 {
   "produtoId": 2,
-  "quantidade": 3,
-  "precoUnitario": 9.99
+  "quantidade": 3
 }
 
 Cancelar venda (restaura estoque)
@@ -130,6 +129,18 @@ Authorization: Bearer JWT_GERADO
 {
   "nome": "Novo Nome",
   "email": "novo@email.com",
-  "celular": "11988887777",
-  "senha": "novaSenha123"
+  "celular": "11988887777"
+}
+
+Solicitar código para troca de senha
+POST /api/sellers/me/request-password-change
+Authorization: Bearer JWT_GERADO
+(sem body - o código é enviado ao WhatsApp do seller)
+
+Trocar senha (com código recebido no WhatsApp)
+PUT /api/sellers/me
+Authorization: Bearer JWT_GERADO
+{
+  "senha": "novaSenha123",
+  "codigo": "4821"
 }
