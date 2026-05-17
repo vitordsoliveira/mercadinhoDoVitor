@@ -44,3 +44,12 @@ def run_migrations():
     if 'created_at' not in sale_columns:
         with db.engine.begin() as connection:
             connection.execute(text("ALTER TABLE sales ADD COLUMN created_at DATETIME"))
+
+    if 'products' not in inspector.get_table_names():
+        return
+
+    product_columns = {col['name']: col for col in inspector.get_columns('products')}
+    imagem_col = product_columns.get('imagem')
+    if imagem_col and hasattr(imagem_col['type'], 'length') and imagem_col['type'].length == 255:
+        with db.engine.begin() as connection:
+            connection.execute(text("ALTER TABLE products MODIFY COLUMN imagem MEDIUMTEXT"))

@@ -10,7 +10,7 @@ class Product(db.Model):
     preco = db.Column(db.Float, nullable=False)
     quantidade = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.String(20), nullable=False, default='Ativo')
-    imagem = db.Column(db.String(255), nullable=True)
+    imagem = db.Column(db.Text(16777215), nullable=True)
 
     sales = db.relationship('Sale', backref='product', lazy=True)
 
