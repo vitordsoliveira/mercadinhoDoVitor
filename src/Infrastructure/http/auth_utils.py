@@ -62,7 +62,7 @@ def parse_price(value):
     except (TypeError, ValueError):
         return None
 
-    if price < 0:
+    if price <= 0:
         return None
 
     return price

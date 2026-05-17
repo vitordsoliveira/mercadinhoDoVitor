@@ -98,20 +98,11 @@ def update_sale(sale_id):
     data = request.get_json() or {}
     new_product_id = parse_quantity(data.get('produtoId', data.get('produto_id')))
     new_quantity = parse_quantity(data.get('quantidade'))
-    new_preco = data.get('precoUnitario', data.get('preco_unitario'))
-
-    if new_preco is not None:
-        try:
-            new_preco = float(new_preco)
-        except (ValueError, TypeError):
-            return jsonify({"error": "Preco unitario invalido"}), 400
-        if new_preco <= 0:
-            return jsonify({"error": "Preco unitario deve ser maior que zero"}), 400
 
     if new_product_id == sale.product_id:
         new_product_id = None
 
-    if new_product_id is None and new_quantity is None and new_preco is None:
+    if new_product_id is None and new_quantity is None:
         return jsonify({"error": "Nenhum campo para atualizar"}), 400
 
     if new_quantity is not None and new_quantity <= 0:
@@ -140,21 +131,20 @@ def update_sale(sale_id):
 
         sale.product_id = new_product_id
         sale.quantidade_vendida = qty_to_use
-        sale.preco_produto_momento_venda = new_preco if new_preco is not None else new_product.preco
+        sale.preco_produto_momento_venda = new_product.preco
 
         updated_product = new_product
     else:
-        if new_quantity is not None:
-            diff = new_quantity - sale.quantidade_vendida
+        if current_product.status != 'Ativo':
+            return jsonify({"error": "Produto inativado nao pode ter venda editada"}), 400
 
-            if diff > 0 and diff > current_product.quantidade:
-                return jsonify({"error": "Nao e possivel vender mais do que a quantidade em estoque"}), 400
+        diff = new_quantity - sale.quantidade_vendida
 
-            current_product.quantidade -= diff
-            sale.quantidade_vendida = new_quantity
+        if diff > 0 and diff > current_product.quantidade:
+            return jsonify({"error": "Nao e possivel vender mais do que a quantidade em estoque"}), 400
 
-        if new_preco is not None:
-            sale.preco_produto_momento_venda = new_preco
+        current_product.quantidade -= diff
+        sale.quantidade_vendida = new_quantity
 
         updated_product = current_product
 
