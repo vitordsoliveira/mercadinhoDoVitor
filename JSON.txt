@@ -112,7 +112,8 @@ PUT /api/sales/1
 Authorization: Bearer JWT_GERADO
 {
   "produtoId": 2,
-  "quantidade": 3
+  "quantidade": 3,
+  "precoUnitario": 9.99
 }
 
 Cancelar venda (restaura estoque)
