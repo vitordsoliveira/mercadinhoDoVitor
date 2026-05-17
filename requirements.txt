@@ -4,3 +4,6 @@ Flask-JWT-Extended
 Flask-Cors
 twilio
 python-dotenv
+gunicorn
+PyMySQL
+cryptography

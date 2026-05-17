@@ -1,13 +1,12 @@
-FROM python:3.8-slim
-WORKDIR /src
-COPY requirements.txt requirements.txt
+FROM python:3.11-slim
 
+WORKDIR /app
+
+COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /src
+COPY . /app
 
-EXPOSE 5000
+EXPOSE 10000
 
-ENV FLASK_RUN_HOST=0.0.0.0
-
-CMD ["flask", "run"]
+CMD ["gunicorn", "run:app", "--bind", "0.0.0.0:10000", "--workers", "2"]

@@ -46,4 +46,5 @@ app = create_app()
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=3223)
+    port = int(os.getenv('PORT', 3223))
+    app.run(debug=False, host='0.0.0.0', port=port)

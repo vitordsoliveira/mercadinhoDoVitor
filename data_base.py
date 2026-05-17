@@ -5,20 +5,26 @@ from sqlalchemy import inspect, text
 db = SQLAlchemy()
 
 def init_db(app):
-    
-    basedir = os.path.abspath(os.path.dirname(__file__))
-    db_path = os.path.join(basedir, 'mercadinho.db')
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
-    
+    database_url = os.getenv('DATABASE_URL', '')
+
+    if database_url.startswith('mysql://'):
+        database_url = database_url.replace('mysql://', 'mysql+pymysql://', 1)
+
+    if not database_url:
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        db_path = os.path.join(basedir, 'mercadinho.db')
+        database_url = f'sqlite:///{db_path}'
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     db.init_app(app)
-    
+
     with app.app_context():
         db.create_all()
-        run_sqlite_migrations()
+        run_migrations()
 
 
-def run_sqlite_migrations():
+def run_migrations():
     inspector = inspect(db.engine)
 
     if 'sellers' not in inspector.get_table_names():
