@@ -81,6 +81,15 @@ def create_product():
     if error_response:
         return error_response
 
+    duplicate = Product.query.filter_by(seller_id=seller.id, nome=payload['nome'], status='Ativo').first()
+    if duplicate:
+        return jsonify({"error": "Ja existe um produto ativo com esse nome"}), 409
+
+    if payload.get('imagem'):
+        duplicate = Product.query.filter_by(seller_id=seller.id, imagem=payload['imagem']).first()
+        if duplicate:
+            return jsonify({"error": "Ja existe um produto com essa imagem"}), 409
+
     product = Product(seller_id=seller.id, **payload)
     db.session.add(product)
     db.session.commit()
@@ -133,6 +142,25 @@ def update_product(product_id):
     payload, error_response = _validate_product_payload(request.get_json() or {}, partial=True)
     if error_response:
         return error_response
+
+    if 'nome' in payload:
+        duplicate = Product.query.filter(
+            Product.seller_id == seller.id,
+            Product.nome == payload['nome'],
+            Product.status == 'Ativo',
+            Product.id != product_id,
+        ).first()
+        if duplicate:
+            return jsonify({"error": "Ja existe um produto ativo com esse nome"}), 409
+
+    if payload.get('imagem'):
+        duplicate = Product.query.filter(
+            Product.seller_id == seller.id,
+            Product.imagem == payload['imagem'],
+            Product.id != product_id,
+        ).first()
+        if duplicate:
+            return jsonify({"error": "Ja existe um produto com essa imagem"}), 409
 
     for field_name, field_value in payload.items():
         setattr(product, field_name, field_value)
