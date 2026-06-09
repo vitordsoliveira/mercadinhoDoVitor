@@ -1,7 +1,7 @@
 import os
 
 from dotenv import find_dotenv, load_dotenv
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
@@ -30,6 +30,13 @@ def create_app():
             }
         },
     )
+
+    upload_folder = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'upload')
+    os.makedirs(upload_folder, exist_ok=True)
+
+    @app.route('/upload/<path:filename>')
+    def serve_upload(filename):
+        return send_from_directory(upload_folder, filename)
 
     init_db(app)
     init_routes(app)

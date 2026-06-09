@@ -51,5 +51,7 @@ def run_migrations():
     product_columns = {col['name']: col for col in inspector.get_columns('products')}
     imagem_col = product_columns.get('imagem')
     if imagem_col and hasattr(imagem_col['type'], 'length') and imagem_col['type'].length == 255:
-        with db.engine.begin() as connection:
-            connection.execute(text("ALTER TABLE products MODIFY COLUMN imagem MEDIUMTEXT"))
+        dialect = db.engine.dialect.name
+        if dialect == 'mysql':
+            with db.engine.begin() as connection:
+                connection.execute(text("ALTER TABLE products MODIFY COLUMN imagem MEDIUMTEXT"))
